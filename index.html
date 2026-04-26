@@ -16,11 +16,20 @@ body {
   overflow: hidden;
 }
 
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0;
+}
+
 .container {
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  z-index: 2;
 }
 
 .card {
@@ -87,6 +96,8 @@ button:hover {
 </head>
 <body>
 
+<canvas id="bg"></canvas>
+
 <div class="container">
   <div class="card" id="card">
     <h1 id="title">Welcome</h1>
@@ -96,35 +107,62 @@ button:hover {
   </div>
 </div>
 
+<!-- BACKSOUND (GitHub-safe CDN) -->
+<audio id="bgm" loop>
+  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8f1a3c4b1.mp3" type="audio/mpeg">
+</audio>
+
 <script>
 
+// ===== PARTICLES (GitHub Pages safe) =====
+const canvas = document.getElementById('bg');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+let particles = [];
+for (let i = 0; i < 70; i++) {
+  particles.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    size: Math.random() * 2,
+    speedX: (Math.random() - 0.5) * 0.4,
+    speedY: (Math.random() - 0.5) * 0.4
+  });
+}
+
+function animateParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  particles.forEach(p => {
+    p.x += p.speedX;
+    p.y += p.speedY;
+
+    if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+    if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.fill();
+  });
+
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+// ===== PAGES =====
 const pages = [
-  {
-    title: "Welcome to Sailor Pi",
-    desc: "An active, fun Discord server with a friendly community!",
-    btn: "Next"
-  },
-  {
-    title: "🎁 Tons of Giveaways",
-    desc: "Win Robux, rewards, and exclusive prizes every week.",
-    btn: "Next"
-  },
-  {
-    title: "🔥 Free Stuff",
-    desc: "Claim free rewards easily just by being active.",
-    btn: "Next"
-  },
-  {
-    title: "💬 Always Active",
-    desc: "Thousands of members, always chatting and having fun.",
-    btn: "Next"
-  },
-  {
-    title: "Join Now",
-    desc: "Click below and become part of the community 🚀",
-    btn: "Join Discord",
-    final: true
-  }
+  {title:"Welcome to Sailor Pi",desc:"An active, fun Discord server with a friendly community!",btn:"Next"},
+  {title:"🎁 Tons of Giveaways",desc:"Win Robux, rewards, and exclusive prizes every week.",btn:"Next"},
+  {title:"🔥 Free Stuff",desc:"Claim free rewards easily just by being active.",btn:"Next"},
+  {title:"💬 Always Active",desc:"Thousands of members, always chatting and having fun.",btn:"Next"},
+  {title:"Join Now",desc:"Click below and become part of the community 🚀",btn:"Join Discord",final:true}
 ];
 
 let index = 0;
@@ -135,11 +173,9 @@ function updatePage() {
 
   setTimeout(() => {
     const page = pages[index];
-
     document.getElementById('title').innerText = page.title;
     document.getElementById('desc').innerText = page.desc;
     document.getElementById('btn').innerText = page.btn;
-
     card.classList.remove('fade-out');
   }, 300);
 }
@@ -149,13 +185,11 @@ function nextPage() {
     window.open('https://discord.gg/F3aP9TRQpF','_blank');
     return;
   }
-
   index++;
   updatePage();
 }
 
-// OPTIONAL: Discord Widget (real stats)
-// Replace with your server ID
+// ===== DISCORD STATS FIX (GitHub Pages) =====
 const SERVER_ID = "1374726798356512880";
 
 async function fetchDiscord() {
@@ -163,14 +197,22 @@ async function fetchDiscord() {
     const res = await fetch(`https://discord.com/api/guilds/${SERVER_ID}/widget.json`);
     const data = await res.json();
 
+    // IMPORTANT FIX: widget.json doesn't return full member count
     document.getElementById('stats').innerText =
-      `${data.presence_count} online • ${data.members.length} shown members`;
+      `${data.presence_count} online • server active`;
+
   } catch {
     document.getElementById('stats').innerText = "Active community 🚀";
   }
 }
-
 fetchDiscord();
+
+// ===== MUSIC (required click) =====
+document.body.addEventListener('click', () => {
+  const music = document.getElementById('bgm');
+  music.volume = 0.4;
+  music.play().catch(()=>{});
+}, { once: true });
 
 </script>
 
