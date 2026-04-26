@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3 INV = 30,000 CRR | Sailor Piece ☠</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: radial-gradient(circle at top, #2c2f33, #1e2124);
+  color: white;
+  overflow: hidden;
+}
+
+.container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 40px;
+  width: 90%;
+  max-width: 700px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  animation: fadeIn 0.8s ease;
+}
+
+h1 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+  font-weight: 800;
+}
+
+p {
+  font-size: 1.2em;
+  opacity: 0.85;
+}
+
+button {
+  margin-top: 25px;
+  padding: 14px 28px;
+  font-size: 1em;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: linear-gradient(135deg,#5865F2,#4752c4);
+  color: white;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 30px rgba(88,101,242,0.5);
+}
+
+.stats {
+  margin-top: 15px;
+  font-size: 0.9em;
+  opacity: 0.7;
+}
+
+.fade-out {
+  animation: fadeOut 0.5s forwards;
+}
+
+@keyframes fadeIn {
+  from {opacity:0; transform: translateY(20px);} 
+  to {opacity:1; transform: translateY(0);} 
+}
+
+@keyframes fadeOut {
+  from {opacity:1;} 
+  to {opacity:0;} 
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="card" id="card">
+    <h1 id="title">Welcome</h1>
+    <p id="desc">Loading...</p>
+    <div class="stats" id="stats"></div>
+    <button onclick="nextPage()" id="btn">Next</button>
+  </div>
+</div>
+
+<script>
+
+const pages = [
+  {
+    title: "Welcome to Sailor Pi",
+    desc: "An active, fun Discord server with a friendly community!",
+    btn: "Next"
+  },
+  {
+    title: "🎁 Tons of Giveaways",
+    desc: "Win Robux, rewards, and exclusive prizes every week.",
+    btn: "Next"
+  },
+  {
+    title: "🔥 Free Stuff",
+    desc: "Claim free rewards easily just by being active.",
+    btn: "Next"
+  },
+  {
+    title: "💬 Always Active",
+    desc: "Thousands of members, always chatting and having fun.",
+    btn: "Next"
+  },
+  {
+    title: "Join Now",
+    desc: "Click below and become part of the community 🚀",
+    btn: "Join Discord",
+    final: true
+  }
+];
+
+let index = 0;
+
+function updatePage() {
+  const card = document.getElementById('card');
+  card.classList.add('fade-out');
+
+  setTimeout(() => {
+    const page = pages[index];
+
+    document.getElementById('title').innerText = page.title;
+    document.getElementById('desc').innerText = page.desc;
+    document.getElementById('btn').innerText = page.btn;
+
+    card.classList.remove('fade-out');
+  }, 300);
+}
+
+function nextPage() {
+  if (pages[index].final) {
+    window.open('https://discord.gg/F3aP9TRQpF','_blank');
+    return;
+  }
+
+  index++;
+  updatePage();
+}
+
+// OPTIONAL: Discord Widget (real stats)
+// Replace with your server ID
+const SERVER_ID = "1374726798356512880";
+
+async function fetchDiscord() {
+  try {
+    const res = await fetch(`https://discord.com/api/guilds/${SERVER_ID}/widget.json`);
+    const data = await res.json();
+
+    document.getElementById('stats').innerText =
+      `${data.presence_count} online • ${data.members.length} shown members`;
+  } catch {
+    document.getElementById('stats').innerText = "Active community 🚀";
+  }
+}
+
+fetchDiscord();
+
+</script>
+
+</body>
+</html>
